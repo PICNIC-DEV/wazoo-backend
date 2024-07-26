@@ -14,7 +14,6 @@ import wazoo.dto.TranscriptionRequest;
 import wazoo.dto.WhisperTranscriptionResponse;
 import wazoo.entity.Message;
 import wazoo.entity.User;
-import wazoo.repository.UserRepository;
 import wazoo.service.ChatRoomService;
 import wazoo.service.MessageService;
 import wazoo.service.OpenAIClientService;

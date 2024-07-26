@@ -8,7 +8,6 @@ import wazoo.entity.Message;
 import wazoo.entity.User;
 import wazoo.repository.ChatRoomRepository;
 import wazoo.repository.MessageRepository;
-import wazoo.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
