@@ -1,22 +1,18 @@
 spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/wazoo
-    username: root
-    password: Abcd123@
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  data:
-    mongodb: mongodb://localhost:27017/test // 로컬로 테스트
+  application:
+    name: api.wazoo.com
 
+  datasource:
+    url: jdbc:mysql://localhost:3306/loginTest
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: db650571!5588
 
   jpa:
-    show-sql: true
     hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
+      ddl-auto: create
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.MySQLDialect
+    show-sql: true
 
-logging:
-  level:
-    org.springframework: DEBUG
-    org.hibernate: DEBUG
