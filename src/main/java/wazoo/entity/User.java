@@ -1,6 +1,19 @@
 package wazoo.entity;
 
 import jakarta.persistence.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Table(name = "usersssss")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+=======
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +21,7 @@ import lombok.Setter;
 @Table(name = "user")
 @Getter
 @Setter
+
 public class User {
 
     @Id
