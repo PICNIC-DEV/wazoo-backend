@@ -41,6 +41,12 @@ public class User {
     @Column(name = "user_state")
     private String userState;
 
+    @Column(name = "user_login_id")
+    private String user_login_id;
+
+    @Column(name = "user_login_password")
+    private String user_login_password;
+
     @Column(name = "coin")
     private Integer coin;
 }

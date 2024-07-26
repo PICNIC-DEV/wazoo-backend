@@ -1,5 +1,6 @@
 package wazoo.service;
 
+import wazoo.dto.UserRegistrationDto;
 import wazoo.entity.User;
 import wazoo.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -58,5 +59,24 @@ public class UserService {
         }
 
         return countOption1 >= 2 ? option1 : option2;
+    }
+
+    public User registerUser(UserRegistrationDto registrationDto) {
+        User existingUser = userRepository.findByName(registrationDto.getName()).orElse(null);
+        if (existingUser != null) {
+            throw new RuntimeException("Username already exists");
+        }
+
+        User user = new User();
+
+        System.out.println(registrationDto.getName()+" "+registrationDto.getLogin_id()+" "+registrationDto.getLogin_password()+" "+registrationDto.getAddress()+" "+registrationDto.getNativeLanguage());
+
+        user.setName(registrationDto.getName());
+        user.setUser_login_id(registrationDto.getLogin_id());
+        user.setUser_login_password(registrationDto.getLogin_password());
+        user.setAddress(registrationDto.getAddress());
+        user.setNativeLanguage(registrationDto.getNativeLanguage());
+
+        return userRepository.save(user);
     }
 }
