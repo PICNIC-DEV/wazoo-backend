@@ -1,6 +1,22 @@
-
 spring:
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  datasource:
+    url: jdbc:mysql://localhost:3306/wazoo
+    username: root
+    password: Abcd123@
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    mongodb: mongodb://localhost:27017/test // 로컬로 테스트
 
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+logging:
+  level:
+    org.springframework: DEBUG
+    org.hibernate: DEBUG

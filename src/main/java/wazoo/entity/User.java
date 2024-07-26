@@ -8,20 +8,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "usersssss")
+@Table(name = "user")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-=======
-import lombok.Getter;
-import lombok.Setter;
-
-@Entity
-@Table(name = "user")
-@Getter
-@Setter
-
 public class User {
 
     @Id
