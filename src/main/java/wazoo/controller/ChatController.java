@@ -14,7 +14,6 @@ import wazoo.dto.TranscriptionRequest;
 import wazoo.dto.WhisperTranscriptionResponse;
 import wazoo.entity.Message;
 import wazoo.entity.User;
-import wazoo.repository.MessageRepository;
 import wazoo.repository.UserRepository;
 import wazoo.service.ChatRoomService;
 import wazoo.service.MessageService;
@@ -91,7 +90,7 @@ public class ChatController {
 
     // 4. 특정 유저가 참여중인 채팅방 전체 조회
     @GetMapping("/rooms/user/{userId}")
-    public ResponseEntity<List<ChatRoomDTO>> getChatRoomsByUserId(@PathVariable int userId) {
+    public ResponseEntity<List<ChatRoomDTO>> getChatRoomsByUserId(@PathVariable Integer userId) {
         User user = userRepository.findByUserId(userId);
         List<ChatRoomDTO> list = chatRoomService.findChatRoomsByUserId(user);
         return ResponseEntity.ok(list);
