@@ -1,9 +1,9 @@
 package wazoo.controller;
 
 import org.springframework.http.ResponseEntity;
+import wazoo.dto.LoginRequestDto;
 import wazoo.dto.UserRegistrationDto;
 import wazoo.entity.User;
-import wazoo.repository.UserRepository;
 import wazoo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,8 +28,6 @@ public class UserController {
             @RequestParam("nativeLanguage") String nativeLanguage) {
         try {
 
-            System.out.println(name +" " + login_id + " " + login_password + " " + address + " " + nativeLanguage );
-
             UserRegistrationDto registrationDto = new UserRegistrationDto();
             registrationDto.setName(name);
             registrationDto.setLogin_id(login_id);
@@ -45,9 +43,16 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody LoginRequestDto loginRequestDto) {
+    public ResponseEntity<?> loginUser(
+            @RequestParam("login_id") String login_id,
+            @RequestParam("login_password") String login_password) {
         try {
-            UserDto userDto = userService.login(loginRequestDto);
+
+            LoginRequestDto loginRequestDto = new LoginRequestDto();
+            loginRequestDto.setLogin_id(login_id);
+            loginRequestDto.setLogin_password(login_password);
+
+            User userDto = userService.login(loginRequestDto);
             return ResponseEntity.ok(userDto);
         } catch (RuntimeException e) {
             return ResponseEntity.status(401).body(e.getMessage());

@@ -1,5 +1,6 @@
 package wazoo.service;
 
+import wazoo.dto.LoginRequestDto;
 import wazoo.dto.UserRegistrationDto;
 import wazoo.entity.User;
 import wazoo.repository.UserRepository;
@@ -69,14 +70,23 @@ public class UserService {
 
         User user = new User();
 
-        System.out.println(registrationDto.getName()+" "+registrationDto.getLogin_id()+" "+registrationDto.getLogin_password()+" "+registrationDto.getAddress()+" "+registrationDto.getNativeLanguage());
-
         user.setName(registrationDto.getName());
-        user.setUser_login_id(registrationDto.getLogin_id());
-        user.setUser_login_password(registrationDto.getLogin_password());
+        user.setUserLoginId(registrationDto.getLogin_id());
+        user.setUserLoginPassword(registrationDto.getLogin_password());
         user.setAddress(registrationDto.getAddress());
         user.setNativeLanguage(registrationDto.getNativeLanguage());
 
         return userRepository.save(user);
     }
+
+    public User login(LoginRequestDto loginRequestDto) {
+
+        User user = userRepository.findByUserLoginIdAndUserLoginPassword(loginRequestDto.getLogin_id(), loginRequestDto.getLogin_password());
+        if (user == null) {
+            throw new RuntimeException("Invalid username or password");
+        }
+
+        return user;
+    }
+
 }

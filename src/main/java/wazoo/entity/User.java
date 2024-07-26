@@ -42,10 +42,10 @@ public class User {
     private String userState;
 
     @Column(name = "user_login_id")
-    private String user_login_id;
+    private String userLoginId;
 
     @Column(name = "user_login_password")
-    private String user_login_password;
+    private String userLoginPassword;
 
     @Column(name = "coin")
     private Integer coin;

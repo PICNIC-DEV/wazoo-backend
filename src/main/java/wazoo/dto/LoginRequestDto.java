@@ -1,7 +1,10 @@
-package wazoo.dto;
+    package wazoo.dto;
 
-public class LoginRequestDto {
-    private String logonid;
+    import lombok.Data;
 
-    private String loginpassword;
-}
+    @Data
+    public class LoginRequestDto {
+        private String login_id;
+
+        private String login_password;
+    }
