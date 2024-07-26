@@ -21,7 +21,7 @@ public class Guide {
     private User user;
 
     @Column(name = "price")
-    private int price;
+    private Integer price;
 
     @Column(name = "start_date")
     private Timestamp startDate;
@@ -39,14 +39,14 @@ public class Guide {
     private String certificateType;
 
     @Column(name = "is_popular")
-    private boolean isPopular;
+    private Boolean isPopular;
 
     @Column(name = "is_recommend")
-    private boolean isRecommend;
+    private Boolean isRecommend;
 
     @Column(name = "latitude")
-    private float latitude;
+    private Float latitude;
 
     @Column(name = "longitude")
-    private float longitude;
+    private Float longitude;
 }
