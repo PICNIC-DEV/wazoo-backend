@@ -30,7 +30,7 @@ public class User {
     private String travelType;
 
     @Column(name = "user_temperature")
-    private int userTemperature;
+    private Integer userTemperature;
 
     @Column(name = "address")
     private String address;
@@ -42,5 +42,5 @@ public class User {
     private String userState;
 
     @Column(name = "coin")
-    private int coin;
+    private Integer coin;
 }
