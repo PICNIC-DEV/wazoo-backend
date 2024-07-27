@@ -63,7 +63,7 @@ public class UserService {
     }
 
     public User registerUser(UserRegistrationDto registrationDto) {
-        User existingUser = userRepository.findByName(registrationDto.getName()).orElse(null);
+        User existingUser = userRepository.findByName(registrationDto.getName());
         if (existingUser != null) {
             throw new RuntimeException("Username already exists");
         }

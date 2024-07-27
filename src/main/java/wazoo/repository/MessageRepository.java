@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 import wazoo.entity.Message;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -17,4 +18,7 @@ public interface MessageRepository extends MongoRepository<Message, String> {
 
     // 4. 특정 채팅방의 마지막 메시지 찾기
     List<Message> findByChatIdOrderByCreatedAtDesc(String chatId);
+
+    // 3일 동안의 메시지 내역 불러오기
+    List<Message> findByUserIdAndCreatedAtAfter(int userId, LocalDateTime timestamp);
 }

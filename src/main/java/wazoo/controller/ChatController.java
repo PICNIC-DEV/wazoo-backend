@@ -20,6 +20,10 @@ import wazoo.service.MessageService;
 import wazoo.service.OpenAIClientService;
 import wazoo.service.TranslationService;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -94,6 +98,21 @@ public class ChatController {
         User user = userRepository.findByUserId(userId);
         List<ChatRoomDTO> list = chatRoomService.findChatRoomsByUserId(user);
         return ResponseEntity.ok(list);
+    }
+
+    // 5. 부적절한 대화 사용한 유저 신고
+    @GetMapping("/report")
+    public Map<String, Object> reportUser(@RequestParam String nickname) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<Message> evidence = chatRoomService.getRecentDialogs(nickname);
+            response.put("status", "success");
+            response.put("evidence", evidence);
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+        }
+        return response;
     }
 
 }
