@@ -15,7 +15,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/traveltype/{user_id}")
-    public User analyzeUser(@PathVariable int user_id, @RequestBody boolean[] answers) {
+    public String analyzeUser(@PathVariable int user_id, @RequestBody boolean[] answers) {
         return userService.saveTravelTypeUser(user_id, answers);
     }
 

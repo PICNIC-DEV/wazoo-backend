@@ -25,7 +25,7 @@ public class UserService {
         travel_type = mapper.readTree(new ClassPathResource("types.json").getInputStream());
     }
 
-    public User saveTravelTypeUser(int user_id, boolean[] answers) {
+    public String saveTravelTypeUser(int user_id, boolean[] answers) {
         String type1 = determineType(new int[]{0, 1, 2}, answers, "유동적", "계획적");
         String type2 = determineType(new int[]{2, 3, 4}, answers, "플렉스", "가성비");
         String type3 = answers[5] ? "현지인 체험" : "유명 관광지";
@@ -41,7 +41,8 @@ public class UserService {
         if(userOptional.isPresent()){
             User user = userOptional.get();
             user.setTravelType(type);
-            return userRepository.save(user);
+            userRepository.save(user);
+            return type;
         }else{
             throw new RuntimeException("User not found with id : " + user_id);
         }
