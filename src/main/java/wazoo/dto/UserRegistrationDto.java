@@ -1,6 +1,6 @@
 package wazoo.dto;
 
-import lombok.Data;
+import lombok.*;
 
 @Data
 public class UserRegistrationDto {

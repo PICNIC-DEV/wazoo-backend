@@ -1,7 +1,10 @@
 package wazoo.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import wazoo.dto.ChatRoomDTO;
 import wazoo.entity.ChatRoom;
 import wazoo.entity.Message;
@@ -28,6 +31,7 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
+    private final MessageService messageService;
 
     private AhoCorasick ahoCorasick;
     private BadWordFiltering badWordFiltering;
@@ -55,6 +59,13 @@ public class ChatRoomService {
     public ChatRoomDTO findChatRoomById(String chatId) {
         Optional<ChatRoom> chatRoom = chatRoomRepository.findByChatRoomId(chatId);
         return chatRoom.map(ChatRoomDTO::fromEntity).orElse(null);
+    }
+
+    // 3. 채팅방 ID 별 대화목록 모두 조회
+    @GetMapping("/messages/{chatId}")
+    public ResponseEntity<List<Message>> getMessages(@PathVariable String chatId) {
+        List<Message> list = messageService.getMessagesByChatId(chatId);
+        return ResponseEntity.ok(list);
     }
 
     // 4. 특정 유저가 참여하고 있는 전체 채팅방 정보 조회

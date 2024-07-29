@@ -28,6 +28,8 @@ public class UserController {
             @RequestParam("nativeLanguage") String nativeLanguage) {
         try {
 
+            System.out.println(">>????12222");
+
             UserRegistrationDto registrationDto = new UserRegistrationDto();
             registrationDto.setName(name);
             registrationDto.setLogin_id(login_id);
