@@ -29,7 +29,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Controller
 @Slf4j
-@RequestMapping(value = "/chat")
+@RequestMapping(value = "/api/v1/chats")
 public class ChatController {
     private final SimpMessageSendingOperations messagingTemplate;
     private final OpenAIClientService openAIClientService;
