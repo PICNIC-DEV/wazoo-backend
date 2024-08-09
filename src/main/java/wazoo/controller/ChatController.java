@@ -41,9 +41,9 @@ public class ChatController {
     private String translatedText;
 
     @PostMapping(value = "/transcription", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> createTranscription(@ModelAttribute TranscriptionRequest transcriptionRequest) {
+    public ResponseEntity<WhisperTranscriptionResponse> createTranscription(@ModelAttribute TranscriptionRequest transcriptionRequest) {
         WhisperTranscriptionResponse response = openAIClientService.createTranscription(transcriptionRequest);
-        return ResponseEntity.ok(response.getText());
+        return ResponseEntity.ok(response);
     }
 
     // 채팅 메시지 수신 및 저장, 메시지를 데이터베이스에 저장한 후 브로드캐스트
