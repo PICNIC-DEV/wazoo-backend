@@ -8,45 +8,38 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "user")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "user")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private int userId;
+    @Column(name = "user_no")
+    private int userNo;
+
+    @Column(name = "user_id", nullable = false)
+    private String userId;
+
+    @Column(name ="user_password", nullable = false)
+    private String userPassword;
 
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "native_language")
-    private String nativeLanguage;
-
-    @Column(name = "travel_type")
-    private String travelType;
-
-    @Column(name = "user_temperature")
-    private Integer userTemperature;
+    @Column(name = "language")
+    private String language;
 
     @Column(name = "address")
     private String address;
 
-    @Column(name = "preferred_country")
-    private String preferredCountry;
+    @Column(name = "coin")
+    private Integer coin;
 
     @Column(name = "user_state")
     private String userState;
 
-    @Column(name = "user_login_id")
-    private String userLoginId;
-
-    @Column(name = "user_login_password")
-    private String userLoginPassword;
-
-    @Column(name = "coin")
-    private Integer coin;
+    @Column(name = "travel_type")
+    private String travelType;
 }
