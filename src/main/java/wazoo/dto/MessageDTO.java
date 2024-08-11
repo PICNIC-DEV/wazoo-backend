@@ -2,7 +2,7 @@ package wazoo.dto;
 
 import lombok.*;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -17,10 +17,10 @@ public class MessageDTO {
     private int messageId;
     private MessageType messageType;
     private String chatId;
-    private int userId;
-    private int partnerId;
-    private String message;
-    private String transMessage;
-    private Timestamp createdAt;
+    private Integer userNo;
+    private Integer partnerNo;
+    private String messageContent;
+    private String transMessageContent;
+    private LocalDateTime createdAt;
 
 }

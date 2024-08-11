@@ -4,7 +4,6 @@
 
     @Data
     public class LoginRequestDto {
-        private String login_id;
-
-        private String login_password;
+        private String userId;
+        private String userPassword;
     }

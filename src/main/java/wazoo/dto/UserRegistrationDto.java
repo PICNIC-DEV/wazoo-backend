@@ -7,11 +7,11 @@ public class UserRegistrationDto {
 
     private String name;
 
-    private String login_id;
+    private String userId;
 
-    private String login_password;
+    private String userPassword;
 
     private String address;
 
-    private String nativeLanguage;
+    private String language;
 }

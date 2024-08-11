@@ -32,7 +32,7 @@ public class GuideService {
 
         return guides.stream()
                 .filter(guide -> {
-                    User guideUser = userRepository.findById(guide.getUser().getUserId()).orElse(null);
+                    User guideUser = userRepository.findById(guide.getUser().getUserNo()).orElse(null);
                     return guideUser != null && guideUser.getTravelType().equals(travelerType);
                 })
                 .collect(Collectors.toList());
