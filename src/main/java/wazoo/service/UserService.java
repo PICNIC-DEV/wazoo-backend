@@ -72,17 +72,17 @@ public class UserService {
         User user = new User();
 
         user.setName(registrationDto.getName());
-        user.setUserLoginId(registrationDto.getLogin_id());
-        user.setUserLoginPassword(registrationDto.getLogin_password());
+        user.setUserId(registrationDto.getUserId());
+        user.setUserPassword(registrationDto.getUserPassword());
         user.setAddress(registrationDto.getAddress());
-        user.setNativeLanguage(registrationDto.getNativeLanguage());
+        user.setLanguage(registrationDto.getLanguage());
 
         return userRepository.save(user);
     }
 
     public User login(LoginRequestDto loginRequestDto) {
 
-        User user = userRepository.findByUserLoginIdAndUserLoginPassword(loginRequestDto.getLogin_id(), loginRequestDto.getLogin_password());
+        User user = userRepository.findByUserIdAndUserPassword(loginRequestDto.getUserId(), loginRequestDto.getUserPassword());
         if (user == null) {
             throw new RuntimeException("Invalid username or password");
         }

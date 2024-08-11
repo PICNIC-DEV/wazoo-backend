@@ -22,20 +22,20 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(
             @RequestParam("name") String name,
-            @RequestParam("login_id") String login_id,
-            @RequestParam("login_password") String login_password,
+            @RequestParam("loginId") String loginId,
+            @RequestParam("loginPassword") String loginPassword,
             @RequestParam("address") String address,
-            @RequestParam("nativeLanguage") String nativeLanguage) {
+            @RequestParam("language") String language) {
         try {
 
             System.out.println(">>????12222");
 
             UserRegistrationDto registrationDto = new UserRegistrationDto();
             registrationDto.setName(name);
-            registrationDto.setLogin_id(login_id);
-            registrationDto.setLogin_password(login_password);
+            registrationDto.setUserId(loginId);
+            registrationDto.setUserPassword(loginPassword);
             registrationDto.setAddress(address);
-            registrationDto.setNativeLanguage(nativeLanguage);
+            registrationDto.setLanguage(language);
 
             userService.registerUser(registrationDto);
             return ResponseEntity.ok("User registered successfully");
@@ -46,13 +46,13 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(
-            @RequestParam("login_id") String login_id,
-            @RequestParam("login_password") String login_password) {
+            @RequestParam("userId") String userId,
+            @RequestParam("userPassword") String userPassword) {
         try {
 
             LoginRequestDto loginRequestDto = new LoginRequestDto();
-            loginRequestDto.setLogin_id(login_id);
-            loginRequestDto.setLogin_password(login_password);
+            loginRequestDto.setUserId(userId);
+            loginRequestDto.setUserPassword(userPassword);
 
             User userDto = userService.login(loginRequestDto);
             return ResponseEntity.ok(userDto);
