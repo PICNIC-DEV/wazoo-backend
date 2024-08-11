@@ -24,9 +24,6 @@ public class SurveyService {
     private final JsonNode travelTypeTree;              // 여행타입 저장
     private final List<SurveyQuestionDto> questions;    // 질문 리스트 저장
 
-    // 생성자 주입
-    @Autowired
-
     // request 한 Json 파일 읽기
     public SurveyService(UserRepository userRepository) throws IOException {
         this.userRepository = userRepository;
