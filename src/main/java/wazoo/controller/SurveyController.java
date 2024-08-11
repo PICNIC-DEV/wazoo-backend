@@ -8,7 +8,7 @@ import wazoo.service.SurveyService;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/surveys")
+@RequestMapping("/api/v1/surveys")
 public class SurveyController {
 
     private final SurveyService surveyService;
