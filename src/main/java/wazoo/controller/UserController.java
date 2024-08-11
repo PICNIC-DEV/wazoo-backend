@@ -1,15 +1,17 @@
 package wazoo.controller;
 
+import feign.Response;
 import org.springframework.http.ResponseEntity;
-import wazoo.dto.LoginRequestDto;
-import wazoo.dto.UserRegistrationDto;
+import wazoo.dto.*;
 import wazoo.entity.User;
 import wazoo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/v1/users")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -59,6 +61,13 @@ public class UserController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(401).body(e.getMessage());
         }
+    }
+
+    // 1. 리뷰 등록
+    @PostMapping("/reviews")
+    public ResponseEntity<CreateReviewResponseDto> createReview(@RequestBody CreateReviewRequestDto reviewRequestDto) {
+        CreateReviewResponseDto responseDto = userService.createReview(reviewRequestDto);
+        return ResponseEntity.ok(responseDto);
     }
 
 }

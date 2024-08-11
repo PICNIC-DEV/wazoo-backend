@@ -1,8 +1,14 @@
 package wazoo.service;
 
+import wazoo.dto.CreateReviewRequestDto;
+import wazoo.dto.CreateReviewResponseDto;
 import wazoo.dto.LoginRequestDto;
 import wazoo.dto.UserRegistrationDto;
+import wazoo.entity.Guide;
+import wazoo.entity.Review;
 import wazoo.entity.User;
+import wazoo.repository.GuideRepository;
+import wazoo.repository.ReviewRepository;
 import wazoo.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +23,12 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private GuideRepository guideRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     private final JsonNode travel_type;
 
@@ -88,6 +100,25 @@ public class UserService {
         }
 
         return user;
+    }
+
+    // 1. 리뷰 등록
+    public CreateReviewResponseDto createReview(CreateReviewRequestDto reviewRequestDto) {
+        User user = userRepository.findByUserNo(reviewRequestDto.getUserNo());
+        Guide guide = guideRepository.findByGuideId(reviewRequestDto.getGuideId());
+
+        Review review = Review.builder()
+                .user(user)
+                .guide(guide)
+                .guideScore(reviewRequestDto.getGuideScore())
+                .review(reviewRequestDto.getReview())
+                .build();
+
+        Review saved = reviewRepository.save(review);
+        return CreateReviewResponseDto.builder()
+                .guideScore(saved.getGuideScore())
+                .review(saved.getReview())
+                .build();
     }
 
 }
