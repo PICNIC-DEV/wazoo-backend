@@ -17,12 +17,12 @@ public class Chat {
     private String chatId;
 
     @ManyToOne
-    @JoinColumn(name = "user_no", referencedColumnName = "user_no")
-    private User userNo;
+    @JoinColumn(name = "user_no", referencedColumnName = "user_no", nullable = false)
+    private User user;
 
     @ManyToOne
-    @JoinColumn(name = "partner_no", referencedColumnName = "user_id")
-    private User partnerNo;
+    @JoinColumn(name = "partner_no", referencedColumnName = "user_no", nullable = false)
+    private User partner;
 
     @PrePersist
     public void prePersist() {

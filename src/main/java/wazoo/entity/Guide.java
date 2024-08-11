@@ -17,36 +17,37 @@ public class Guide {
     private int guideId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
+    @JoinColumn(name = "user_no", referencedColumnName = "user_no", nullable = false)
     private User user;
 
-    @Column(name = "price")
-    private Integer price;
+    @Column(name = "introduction", nullable = false)
+    private String introduction;
 
-    @Column(name = "start_date")
+    @Column(name = "start_date", nullable = false)
     private Timestamp startDate;
 
-    @Column(name = "end_date")
+    @Column(name = "end_date", nullable = false)
     private Timestamp endDate;
 
-    @Column(name = "profile_image")
-    private String profileImage;
-
-    @Column(name = "active_area")
+    @Column(name = "active_area", nullable = false)
     private String activeArea;
 
-    @Column(name = "certificate_type")
-    private String certificateType;
-
-    @Column(name = "is_popular")
-    private Boolean isPopular;
-
-    @Column(name = "is_recommend")
-    private Boolean isRecommend;
-
-    @Column(name = "latitude")
+    @Column(name = "latitude", nullable = false)
     private Float latitude;
 
-    @Column(name = "longitude")
+    @Column(name = "longitude", nullable = false)
     private Float longitude;
+
+    @Column(name = "guide_price", nullable = false)
+    private Integer guidePrice;
+
+    @Column(name = "guide_travel_type", nullable = false)
+    private String guideTravelType;
+
+    @Column(name = "profile", nullable = false)
+    private String profile;
+
+    @Column(name = "certification")
+    private String certification;
+
 }

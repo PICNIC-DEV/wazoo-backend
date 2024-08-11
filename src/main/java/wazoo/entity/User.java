@@ -17,7 +17,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_no")
-    private int userNo;
+    private Integer userNo;
 
     @Column(name = "user_id", nullable = false)
     private String userId;
@@ -28,16 +28,16 @@ public class User {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "language")
+    @Column(name = "language", nullable = false)
     private String language;
 
-    @Column(name = "address")
+    @Column(name = "address", nullable = false)
     private String address;
 
     @Column(name = "coin")
     private Integer coin;
 
-    @Column(name = "user_state")
+    @Column(name = "user_state", nullable = false)
     private String userState;
 
     @Column(name = "travel_type")

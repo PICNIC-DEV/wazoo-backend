@@ -19,10 +19,9 @@ public class Message {
     private String chatId;
     private String messageContent;
     private String transMessageContent;
-    private int userNo;
-    private int partnerNo;
-    @CreatedDate
-    private Date createdAt;
+    private Integer userNo;
+    private Integer partnerNo;
+    private LocalDateTime createdAt;
     private MessageType messageType;
 
     public enum MessageType {
