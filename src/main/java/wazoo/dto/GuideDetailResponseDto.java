@@ -16,7 +16,7 @@ public class GuideDetailResponseDto {
     private Integer guidePrice;
     private LocalDate startDate;
     private LocalDate endDate;
-    private ReviewsUrl reviewsUrl;
+    // private ReviewsUrl reviewsUrl;
 
     @Getter
     @Setter

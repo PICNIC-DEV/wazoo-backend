@@ -81,12 +81,12 @@ public class SearchService {
         responseDto.setEndDate(guide.getEndDate().toLocalDate());
 
         // 리뷰 URL 설정
-        GuideDetailResponseDto.ReviewsUrl reviewsUrl = new GuideDetailResponseDto.ReviewsUrl();
-        reviewsUrl.setRel("review");
-        reviewsUrl.setHref("https://api.wazoo.com/users/reviews/");
-        reviewsUrl.setAction("GET");
-
-        responseDto.setReviewsUrl(reviewsUrl);
+//        GuideDetailResponseDto.ReviewsUrl reviewsUrl = new GuideDetailResponseDto.ReviewsUrl();
+//        reviewsUrl.setRel("review");
+//        reviewsUrl.setHref("https://api.wazoo.com/users/reviews/");
+//        reviewsUrl.setAction("GET");
+//
+//        responseDto.setReviewsUrl(reviewsUrl);
 
         return responseDto;
     }
