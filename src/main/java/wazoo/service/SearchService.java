@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import wazoo.dto.GuideDetailResponseDto;
 import wazoo.dto.SearchRequestDto;
 import wazoo.dto.SearchResponseDto;
 import wazoo.entity.Guide;
@@ -61,6 +62,33 @@ public class SearchService {
         }
 
         return response;
+    }
+
+    public GuideDetailResponseDto getGuideDetail(Integer guideId) {
+        // guideId로 가이드 검색
+        Guide guide = guideRepository.findByGuideId(guideId);
+        // if guide == null
+
+        // GuideDetailResponseDto로 변환하여 반환
+        GuideDetailResponseDto responseDto = new GuideDetailResponseDto();
+        responseDto.setGuideId(guide.getGuideId());
+        responseDto.setName(guide.getUser().getName());
+        responseDto.setProfile(guide.getProfile());
+        responseDto.setGuideArea(guide.getActiveArea());
+        responseDto.setIntroduction(guide.getIntroduction());
+        responseDto.setGuidePrice(guide.getGuidePrice());
+        responseDto.setStartDate(guide.getStartDate().toLocalDate());
+        responseDto.setEndDate(guide.getEndDate().toLocalDate());
+
+        // 리뷰 URL 설정
+        GuideDetailResponseDto.ReviewsUrl reviewsUrl = new GuideDetailResponseDto.ReviewsUrl();
+        reviewsUrl.setRel("review");
+        reviewsUrl.setHref("https://api.wazoo.com/users/reviews/");
+        reviewsUrl.setAction("GET");
+
+        responseDto.setReviewsUrl(reviewsUrl);
+
+        return responseDto;
     }
 
     private String determineTravelType(SearchRequestDto.SelectTravelTypeDto travelType) {
