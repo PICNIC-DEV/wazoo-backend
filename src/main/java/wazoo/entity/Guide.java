@@ -14,7 +14,7 @@ public class Guide {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "guide_id")
-    private int guideId;
+    private Integer guideId;
 
     @ManyToOne
     @JoinColumn(name = "user_no", referencedColumnName = "user_no", nullable = false)
