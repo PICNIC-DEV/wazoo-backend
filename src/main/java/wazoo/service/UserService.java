@@ -1,14 +1,14 @@
 package wazoo.service;
 
-import wazoo.dto.CreateReviewRequestDto;
-import wazoo.dto.CreateReviewResponseDto;
-import wazoo.dto.LoginRequestDto;
-import wazoo.dto.UserRegistrationDto;
+import org.springframework.transaction.annotation.Transactional;
+import wazoo.dto.*;
 import wazoo.entity.Guide;
 import wazoo.entity.Review;
+import wazoo.entity.ReviewSummary;
 import wazoo.entity.User;
 import wazoo.repository.GuideRepository;
 import wazoo.repository.ReviewRepository;
+import wazoo.repository.ReviewSummaryRepository;
 import wazoo.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,8 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class UserService {
 
@@ -29,6 +32,9 @@ public class UserService {
 
     @Autowired
     private ReviewRepository reviewRepository;
+
+    @Autowired
+    private ReviewSummaryRepository reviewSummaryRepository;
 
     private final JsonNode travel_type;
 
@@ -119,6 +125,55 @@ public class UserService {
                 .guideScore(saved.getGuideScore())
                 .review(saved.getReview())
                 .build();
+    }
+
+    // 2. 리뷰 수정
+    @Transactional
+    public Review update(Integer reviewId, UpdateReviewDto updateReviewDto) {
+        Review review = reviewRepository.findByReviewId(reviewId)
+                .orElseThrow(() -> new IllegalArgumentException("not found reviewId: " + reviewId));
+        review.update(updateReviewDto.getReview());
+        return review;
+    }
+
+    // 3. 리뷰 조회
+    public Review findByReviewId(Integer reviewId) {
+        return reviewRepository.findByReviewId(reviewId)
+                .orElseThrow(() -> new IllegalArgumentException("not found reviewId: " + reviewId));
+    }
+
+    // 4. 리뷰 삭제
+    public void deleteReview(Integer reviewId) {
+        reviewRepository.deleteById(reviewId);
+    }
+
+    // 5. 특정 유저가 작성한 리뷰 조회
+    public List<Review> findReviewsByUserNo(Integer userNo){
+        return reviewRepository.findByUser_UserNo(userNo);
+    }
+
+    // 6. 특정 가이드의 리뷰 리스트와 평균 점수 조회
+    public GuideReviewListResponseDto findGuideReviewsAndAverage(Integer guideId) {
+        List<ReviewResponseDto> guideReviewsList = getGuideReviews(guideId);
+        Double guideScoreAvg = getGuideScoreAvg(guideId);
+
+        return new GuideReviewListResponseDto(guideId, guideScoreAvg, guideReviewsList);
+    }
+
+    // 6-1 특정 가이드의 리뷰 리스트 조회
+    private List<ReviewResponseDto> getGuideReviews(Integer guideId) {
+        List<Review> reviews = reviewRepository.findByGuide_GuideId(guideId);
+
+       return reviews.stream()
+                .map(ReviewResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    // 6-2 특정 가이드의 평균 점수 조회
+    private Double getGuideScoreAvg(Integer guideId) {
+        ReviewSummary reviewSummary = reviewSummaryRepository.findById(guideId)
+                .orElseThrow(() -> new IllegalArgumentException("not found guidId: " + guideId));
+        return reviewSummary.getGuideScoreAvg();
     }
 
 }

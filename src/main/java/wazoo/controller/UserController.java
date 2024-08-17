@@ -1,14 +1,18 @@
 package wazoo.controller;
 
 import feign.Response;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import wazoo.dto.*;
+import wazoo.entity.Review;
 import wazoo.entity.User;
 import wazoo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -67,7 +71,46 @@ public class UserController {
     @PostMapping("/reviews")
     public ResponseEntity<CreateReviewResponseDto> createReview(@RequestBody CreateReviewRequestDto reviewRequestDto) {
         CreateReviewResponseDto responseDto = userService.createReview(reviewRequestDto);
-        return ResponseEntity.ok(responseDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(responseDto);
+    }
+
+    // 2. 리뷰 수정
+    @PatchMapping("/reviews/{reviewId}")
+    public ResponseEntity<Review> updateReview(@PathVariable Integer reviewId, @RequestBody UpdateReviewDto updateReviewDto) {
+        Review updatedReview = userService.update(reviewId, updateReviewDto);
+        return ResponseEntity.ok().body(updatedReview);
+    }
+
+    // 3. 리뷰 조회
+    @GetMapping("/reviews/{reviewId}")
+    public ResponseEntity<ReviewResponseDto> getReview(@PathVariable Integer reviewId) {
+        Review review = userService.findByReviewId(reviewId);
+        return ResponseEntity.ok()
+                .body(new ReviewResponseDto(review));
+    }
+
+    // 4. 리뷰 삭제
+    @DeleteMapping("/reviews/{reviewId}")
+    public ResponseEntity<Map<String, String>> deleteReview(@PathVariable Integer reviewId){
+        userService.deleteReview(reviewId);
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "success");
+        return ResponseEntity.ok(response);
+    }
+
+    // 5. 특정 유저가 작성한 리뷰 조회
+    @GetMapping("/{userNo}/reviews")
+    public ResponseEntity<List<Review>> getReviewList(@PathVariable Integer userNo) {
+        List<Review> reviewList = userService.findReviewsByUserNo(userNo);
+        return ResponseEntity.ok(reviewList);
+    }
+
+    // 6. 특정 가이드의 리뷰 리스트 조회
+    @GetMapping("/reviews/guides/{guideId}")
+    public ResponseEntity<GuideReviewListResponseDto> getGuideReviewList(@PathVariable Integer guideId) {
+        GuideReviewListResponseDto guideReviewListResponseDto = userService.findGuideReviewsAndAverage(guideId);
+        return ResponseEntity.ok(guideReviewListResponseDto);
     }
 
 }

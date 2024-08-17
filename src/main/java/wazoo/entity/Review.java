@@ -37,4 +37,8 @@ public class Review {
         this.guideScore = guideScore;
         this.review = review;
     }
+
+    public void update(String review) {
+        this.review = review;
+    }
 }
