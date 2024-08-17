@@ -67,12 +67,11 @@ public class UserController {
         }
     }
 
-    // 1. 리뷰 등록
+    // 1. 리뷰 등록 CreateReviewResponseDto
     @PostMapping("/reviews")
-    public ResponseEntity<CreateReviewResponseDto> createReview(@RequestBody CreateReviewRequestDto reviewRequestDto) {
-        CreateReviewResponseDto responseDto = userService.createReview(reviewRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(responseDto);
+    public ResponseEntity<Map<String, String>> createReview(@RequestBody CreateReviewRequestDto reviewRequestDto) {
+        Map<String, String> response = userService.createReview(reviewRequestDto);
+        return ResponseEntity.ok(response);
     }
 
     // 2. 리뷰 수정

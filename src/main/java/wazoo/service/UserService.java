@@ -1,6 +1,7 @@
 package wazoo.service;
 
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.HandlerInterceptor;
 import wazoo.dto.*;
 import wazoo.entity.Guide;
 import wazoo.entity.Review;
@@ -16,8 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -109,7 +112,7 @@ public class UserService {
     }
 
     // 1. 리뷰 등록
-    public CreateReviewResponseDto createReview(CreateReviewRequestDto reviewRequestDto) {
+    public Map<String, String> createReview(CreateReviewRequestDto reviewRequestDto) {
         User user = userRepository.findByUserNo(reviewRequestDto.getUserNo());
         Guide guide = guideRepository.findByGuideId(reviewRequestDto.getGuideId());
 
@@ -120,11 +123,11 @@ public class UserService {
                 .review(reviewRequestDto.getReview())
                 .build();
 
-        Review saved = reviewRepository.save(review);
-        return CreateReviewResponseDto.builder()
-                .guideScore(saved.getGuideScore())
-                .review(saved.getReview())
-                .build();
+        reviewRepository.save(review);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "success");
+        return response;
     }
 
     // 2. 리뷰 수정
