@@ -17,11 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.io.IOException;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -140,9 +137,17 @@ public class UserService {
     }
 
     // 3. 리뷰 조회
-    public Review findByReviewId(Integer reviewId) {
-        return reviewRepository.findByReviewId(reviewId)
-                .orElseThrow(() -> new IllegalArgumentException("not found reviewId: " + reviewId));
+    public ReviewResponseDto findByReviewId(Integer reviewId) {
+        Review review = reviewRepository.findByReviewId(reviewId)
+                .orElseThrow(() ->
+                        new NoSuchElementException("not found reviewId: " + reviewId));
+
+        return new ReviewResponseDto(
+                review.getReviewId(),
+                review.getGuide().getGuideTravelType(),
+                review.getGuideScore(),
+                review.getReview()
+        );
     }
 
     // 4. 리뷰 삭제
@@ -151,8 +156,18 @@ public class UserService {
     }
 
     // 5. 특정 유저가 작성한 리뷰 조회
-    public List<Review> findReviewsByUserNo(Integer userNo){
-        return reviewRepository.findByUser_UserNo(userNo);
+    public UserReviewListResponseDto findReviewsByUserNo(Integer userNo){
+        List<Review> userReviewsList = reviewRepository.findByUser_UserNo(userNo);
+
+        List<ReviewResponseDto> reviewsDto = userReviewsList.stream()
+                .map(review -> new ReviewResponseDto(
+                        review.getReviewId(),
+                        review.getUser().getTravelType(),
+                        review.getGuideScore(),
+                        review.getReview()
+                        ))
+                .collect(Collectors.toList());
+        return new UserReviewListResponseDto(reviewsDto);
     }
 
     // 6. 특정 가이드의 리뷰 리스트와 평균 점수 조회
@@ -165,11 +180,17 @@ public class UserService {
 
     // 6-1 특정 가이드의 리뷰 리스트 조회
     private List<ReviewResponseDto> getGuideReviews(Integer guideId) {
-        List<Review> reviews = reviewRepository.findByGuide_GuideId(guideId);
+        List<Review> guideReviewsList = reviewRepository.findByGuide_GuideId(guideId);
 
-       return reviews.stream()
-                .map(ReviewResponseDto::new)
+        List<ReviewResponseDto> reviewsDto = guideReviewsList.stream()
+                .map(review -> new ReviewResponseDto(
+                        review.getReviewId(),
+                        review.getUser().getTravelType(),
+                        review.getGuideScore(),
+                        review.getReview()
+                ))
                 .collect(Collectors.toList());
+        return reviewsDto;
     }
 
     // 6-2 특정 가이드의 평균 점수 조회

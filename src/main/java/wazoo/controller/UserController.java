@@ -84,9 +84,8 @@ public class UserController {
     // 3. 리뷰 조회
     @GetMapping("/reviews/{reviewId}")
     public ResponseEntity<ReviewResponseDto> getReview(@PathVariable Integer reviewId) {
-        Review review = userService.findByReviewId(reviewId);
-        return ResponseEntity.ok()
-                .body(new ReviewResponseDto(review));
+        ReviewResponseDto response = userService.findByReviewId(reviewId);
+        return ResponseEntity.ok(response);
     }
 
     // 4. 리뷰 삭제
@@ -100,9 +99,9 @@ public class UserController {
 
     // 5. 특정 유저가 작성한 리뷰 조회
     @GetMapping("/{userNo}/reviews")
-    public ResponseEntity<List<Review>> getReviewList(@PathVariable Integer userNo) {
-        List<Review> reviewList = userService.findReviewsByUserNo(userNo);
-        return ResponseEntity.ok(reviewList);
+    public ResponseEntity<UserReviewListResponseDto> getReviewList(@PathVariable Integer userNo) {
+        UserReviewListResponseDto reviewsByUserNo = userService.findReviewsByUserNo(userNo);
+        return ResponseEntity.ok(reviewsByUserNo);
     }
 
     // 6. 특정 가이드의 리뷰 리스트 조회
