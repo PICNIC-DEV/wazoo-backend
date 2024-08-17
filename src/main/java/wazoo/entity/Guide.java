@@ -3,7 +3,9 @@ package wazoo.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import java.sql.Timestamp;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.sql.Date;
 
 @Entity
 @Table(name = "guide")
@@ -23,11 +25,15 @@ public class Guide {
     @Column(name = "introduction", nullable = false)
     private String introduction;
 
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "start_date", nullable = false)
-    private Timestamp startDate;
+    private Date startDate;
 
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "end_date", nullable = false)
-    private Timestamp endDate;
+    private Date endDate;
 
     @Column(name = "active_area", nullable = false)
     private String activeArea;

@@ -20,11 +20,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/traveltype/{user_id}")
-    public String analyzeUser(@PathVariable int user_id, @RequestBody boolean[] answers) {
-        return userService.saveTravelTypeUser(user_id, answers);
-    }
-
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(
             @RequestParam("name") String name,
