@@ -11,7 +11,6 @@ public interface GuideRepository extends JpaRepository<Guide, Integer> {
 
     List<Guide> findByActiveArea(String activeArea);
     Guide findByGuideId(Integer guideId);
-    Guide findByGuideId(Integer guideId);  // GuideId로 가이드를 찾는 메서드
     List<Guide> findAll();  // 모든 가이드를 가져오는 메서드
     List<Guide> findByUserUserNo(Integer userNo);  // UserNo로 가이드를 찾는 메서드
 

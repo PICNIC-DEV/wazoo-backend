@@ -6,9 +6,12 @@ import com.google.cloud.translate.TranslateOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 @Configuration
 public class GoogleTranslationConfig {
@@ -17,7 +20,14 @@ public class GoogleTranslationConfig {
 
     @Bean
     public Translate translate() throws IOException {
-        GoogleCredentials credentials = GoogleCredentials.fromStream(new FileInputStream(credentialsPath))
+        InputStream fileInputStream;
+        try {
+            fileInputStream = new ClassPathResource("classpath:google-credentials.json").getInputStream();
+        } catch (FileNotFoundException e) {
+            fileInputStream = new FileInputStream(credentialsPath);
+        }
+
+        GoogleCredentials credentials = GoogleCredentials.fromStream(fileInputStream)
                 .createScoped("https://www.googleapis.com/auth/cloud-translation");
         TranslateOptions translateOptions = TranslateOptions.newBuilder()
                 .setCredentials(credentials)
