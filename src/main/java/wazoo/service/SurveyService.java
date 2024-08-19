@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +50,7 @@ public class SurveyService {
 
         String type1 = determineType(groupedAnswers.get("유동적/계획적"), new String[]{"유동적", "계획적"});
         String type2 = determineType(groupedAnswers.get("플렉스/가성비"), new String[]{"플렉스", "가성비"});
-        String type3 = determineType(groupedAnswers.get("현지인 체험/유명 관광지"), new String[]{"현지인 체험", "유명 관광지"});
+        String type3 = determineType(groupedAnswers.get("유명 관광지/현지인 체험"), new String[]{"유명 관광지", "현지인 체험"});
         String type4 = determineType(groupedAnswers.get("혼자/다같이"), new String[]{"혼자", "다같이"});
 
         String travelType = travelTypeTree
