@@ -28,9 +28,6 @@ public class UserController {
             @RequestParam("address") String address,
             @RequestParam("language") String language) {
         try {
-
-            System.out.println(">>????12222");
-
             UserRegistrationDto registrationDto = new UserRegistrationDto();
             registrationDto.setName(name);
             registrationDto.setUserId(loginId);
