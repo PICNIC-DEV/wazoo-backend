@@ -13,6 +13,7 @@ import wazoo.repository.GuideRepository;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -33,14 +34,17 @@ public class SearchService {
     }
 
     public List<SearchResponseDto> searchGuides(SearchRequestDto searchRequestDto) {
-        String travelType = determineTravelType(searchRequestDto.getSelectTravelType());
+        List<String> travelTypes = determineTravelTypes(searchRequestDto.getSelectTravelType());
 
-        List<Guide> guides = guideRepository.findGuidesWithinRadiusAndType(
-                searchRequestDto.getLatitude(),
-                searchRequestDto.getLongitude(),
-                travelType,
-                5.0  // 반경 5km
-        );
+        List<Guide> guides = new ArrayList<>();
+        for (String travelType : travelTypes) {
+            guides.addAll(guideRepository.findGuidesWithinRadiusAndType(
+                    searchRequestDto.getLatitude(),
+                    searchRequestDto.getLongitude(),
+                    travelType,
+                    5.0  // 반경 5km
+            ));
+        }
 
         // Guide를 SearchResponseDto로 변환
         List<SearchResponseDto> response = new ArrayList<>();
@@ -65,11 +69,8 @@ public class SearchService {
     }
 
     public GuideDetailResponseDto getGuideDetail(Integer guideId) {
-        // guideId로 가이드 검색
         Guide guide = guideRepository.findByGuideId(guideId);
-        // if guide == null
 
-        // GuideDetailResponseDto로 변환하여 반환
         GuideDetailResponseDto responseDto = new GuideDetailResponseDto();
         responseDto.setGuideId(guide.getGuideId());
         responseDto.setName(guide.getUser().getName());
@@ -80,37 +81,48 @@ public class SearchService {
         responseDto.setStartDate(guide.getStartDate().toLocalDate());
         responseDto.setEndDate(guide.getEndDate().toLocalDate());
 
-        // 리뷰 URL 설정
-//        GuideDetailResponseDto.ReviewsUrl reviewsUrl = new GuideDetailResponseDto.ReviewsUrl();
-//        reviewsUrl.setRel("review");
-//        reviewsUrl.setHref("https://api.wazoo.com/users/reviews/");
-//        reviewsUrl.setAction("GET");
-//
-//        responseDto.setReviewsUrl(reviewsUrl);
-
         return responseDto;
     }
 
-    private String determineTravelType(SearchRequestDto.SelectTravelTypeDto travelType) {
-        String[] group1Options = {"유동적", "계획적"};
-        String[] group2Options = {"플렉스", "가성비"};
-        String[] group3Options = {"유명 관광지", "현지인 체험"};
-        String[] group4Options = {"혼자", "다같이"};
+    private void generateTravelTypes(JsonNode node, List<String> selectedTypes, int depth, List<List<String>> options, List<String> travelTypes) {
+        if (depth == options.size()) {
+            String result = node.asText(null);
+            if (result != null && !result.isEmpty()) {
+                travelTypes.add(result);
+            }
+            return;
+        }
 
-        String type1 = determineGroupType(travelType.getGroup1(), group1Options);
-        String type2 = determineGroupType(travelType.getGroup2(), group2Options);
-        String type3 = determineGroupType(travelType.getGroup3(), group3Options);
-        String type4 = determineGroupType(travelType.getGroup4(), group4Options);
-
-        return travelTypeTree
-                .path(type1)
-                .path(type2)
-                .path(type3)
-                .path(type4)
-                .asText();
+        for (String option : options.get(depth)) {
+            generateTravelTypes(node.path(option), selectedTypes, depth + 1, options, travelTypes);
+        }
     }
 
-    private String determineGroupType(Integer groupValue, String[] options) {
-        return options[groupValue - 1];
+    private List<String> determineTravelTypes(SearchRequestDto.SelectTravelTypeDto travelType) {
+        String[] group1Options = {"선택안함", "유동적", "계획적"};
+        String[] group2Options = {"선택안함", "플렉스", "가성비"};
+        String[] group3Options = {"선택안함", "유명 관광지", "현지인 체험"};
+        String[] group4Options = {"선택안함", "혼자", "다같이"};
+
+        List<List<String>> options = new ArrayList<>();
+        options.add(getGroupOptions(travelType.getGroup1(), group1Options));
+        options.add(getGroupOptions(travelType.getGroup2(), group2Options));
+        options.add(getGroupOptions(travelType.getGroup3(), group3Options));
+        options.add(getGroupOptions(travelType.getGroup4(), group4Options));
+
+        List<String> travelTypes = new ArrayList<>();
+        generateTravelTypes(travelTypeTree, new ArrayList<>(), 0, options, travelTypes);
+
+        return travelTypes;
+    }
+
+    private List<String> getGroupOptions(Integer groupValue, String[] options) {
+        if (groupValue == 0) {
+            // "선택안함"인 경우, 해당 그룹의 모든 옵션을 반환
+            return new ArrayList<>(Arrays.asList(Arrays.copyOfRange(options, 1, options.length)));
+        } else {
+            // 선택된 특정 옵션만 반환
+            return List.of(options[groupValue]);
+        }
     }
 }
