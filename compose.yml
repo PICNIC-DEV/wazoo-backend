@@ -1,0 +1,6 @@
+services:
+  wazoo-web-server:
+    container_name: webserver
+    build: .
+    ports:
+      - 80:8080
