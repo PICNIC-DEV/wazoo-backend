@@ -20,7 +20,7 @@ public class Message {
     private String messageContent;
     private String transMessageContent;
     private Integer userNo;
-    private Integer partnerNo;
+    private Integer guideId;
     private LocalDateTime createdAt;
     private MessageType messageType;
 

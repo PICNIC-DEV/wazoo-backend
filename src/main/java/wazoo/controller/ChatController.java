@@ -10,8 +10,10 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import wazoo.dto.*;
+import wazoo.entity.Guide;
 import wazoo.entity.Message;
 import wazoo.entity.User;
+import wazoo.repository.GuideRepository;
 import wazoo.repository.UserRepository;
 import wazoo.service.ChatRoomService;
 import wazoo.service.MessageService;
@@ -32,6 +34,7 @@ public class ChatController {
     private final ChatRoomService chatRoomService;
     private final MessageService messageService;
     private final TranslationService translationService;
+    private final GuideRepository guideRepository;
     private final UserRepository userRepository;
 
     private String translatedText;
@@ -44,15 +47,16 @@ public class ChatController {
     // 채팅 메시지 수신 및 저장, 메시지를 데이터베이스에 저장한 후 브로드캐스트
     @MessageMapping("/message")
     public void sendMessage(MessageDTO message) {
-        message.setPartnerNo(message.getPartnerNo()); // 메시지 처리 전 상대방 아이디 설정
+        message.setGuideId(message.getGuideId()); // 메시지 처리 전 상대방 아이디 설정
 
         int userNo = message.getUserNo();
         User user = userRepository.findByUserNo(userNo);
         String userLang = user.getLanguage();
 
-        int partnerNo = message.getPartnerNo();
-        User partner = userRepository.findByUserNo(partnerNo);
-        String partnerLang = partner.getLanguage();
+        int guidId = message.getGuideId();
+        Guide guide  = guideRepository.findByGuideId(guidId);
+        User guideUser = guide.getUser();
+        String partnerLang = guideUser.getLanguage();
 
         // google translation api
         translatedText = translationService.translateText(message.getMessageContent(), partnerLang, userLang); // text, targetLanguage
@@ -96,7 +100,7 @@ public class ChatController {
     @PostMapping("/")
     public ResponseEntity<ChatDto> createChatRoom(@RequestBody ChatDto request) {
         try {
-            ChatDto chatRoom = chatRoomService.createRoom(request.getUserNo(), request.getPartnerNo());
+            ChatDto chatRoom = chatRoomService.createRoom(request.getUserNo(), request.getGuideId());
             return ResponseEntity.ok(chatRoom);
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);

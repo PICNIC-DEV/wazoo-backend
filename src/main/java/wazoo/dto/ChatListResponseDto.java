@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class ChatListResponseDto {
     private String chatId;
     private Integer userNo;
-    private Integer partnerNo;
+    private Integer guideId;
     private String partnerName;
     private String lastMessage;
     private LocalDateTime lastMessageTime;
@@ -22,7 +22,7 @@ public class ChatListResponseDto {
         return ChatListResponseDto.builder()
                 .chatId(chat.getChatId())
                 .userNo(chat.getUser().getUserNo())
-                .partnerNo(chat.getPartner().getUserNo())
+                .guideId(chat.getGuide().getGuideId())
                 .partnerName(partnerName)
                 .lastMessage(lastMessage)
                 .lastMessageTime(lastMessageTime)

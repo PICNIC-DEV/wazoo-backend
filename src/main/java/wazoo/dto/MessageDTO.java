@@ -18,7 +18,7 @@ public class MessageDTO {
     private MessageType messageType;
     private String chatId;
     private Integer userNo;
-    private Integer partnerNo;
+    private Integer guideId;
     private String messageContent;
     private String transMessageContent;
     private LocalDateTime createdAt;

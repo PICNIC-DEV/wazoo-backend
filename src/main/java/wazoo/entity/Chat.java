@@ -21,8 +21,8 @@ public class Chat {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "partner_no", referencedColumnName = "user_no", nullable = false)
-    private User partner;
+    @JoinColumn(name = "guide_id", referencedColumnName = "guide_id", nullable = false)
+    private Guide guide;
 
     @PrePersist
     public void prePersist() {
