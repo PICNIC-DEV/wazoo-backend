@@ -68,12 +68,13 @@ public class UserService {
     public Map<String, String> createReview(CreateReviewRequestDto reviewRequestDto) {
         User user = userRepository.findByUserNo(reviewRequestDto.getUserNo());
         Guide guide = guideRepository.findByGuideId(reviewRequestDto.getGuideId());
+        String guideReview = reviewRequestDto.getReview() == "" ? "등록된 리뷰가 없습니다." : reviewRequestDto.getReview();
 
         Review review = Review.builder()
                 .user(user)
                 .guide(guide)
                 .guideScore(reviewRequestDto.getGuideScore())
-                .review(reviewRequestDto.getReview())
+                .review(guideReview)
                 .build();
 
         reviewRepository.save(review);
@@ -154,6 +155,14 @@ public class UserService {
         ReviewSummary reviewSummary = reviewSummaryRepository.findById(guideId)
                 .orElseThrow(() -> new IllegalArgumentException("not found guidId: " + guideId));
         return reviewSummary.getGuideScoreAvg();
+    }
+
+    public MyPageResponseDto getUserInfoByUserNo(Integer userNo) {
+        User user = userRepository.findByUserNo(userNo); // 유저 가져오깅
+        Guide guide = guideRepository.findByUser(user);
+        Integer guideId = (guide != null) ? guide.getGuideId() : null;
+        return new MyPageResponseDto(user.getName(), user.getTravelType(), user.getCoin(), guideId);
+
     }
 
 }

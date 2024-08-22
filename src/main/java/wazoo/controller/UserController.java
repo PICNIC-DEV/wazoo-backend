@@ -103,4 +103,11 @@ public class UserController {
         return ResponseEntity.ok(guideReviewListResponseDto);
     }
 
+    // 마이페이지 조회
+    @GetMapping("/{userNo}/mypage")
+    public ResponseEntity<MyPageResponseDto> getUserMyPage(@PathVariable Integer userNo) {
+        MyPageResponseDto myPageResponseDto = userService.getUserInfoByUserNo(userNo);
+        return ResponseEntity.ok(myPageResponseDto);
+    }
+
 }
