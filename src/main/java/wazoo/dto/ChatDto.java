@@ -17,13 +17,13 @@ import wazoo.entity.User;
 public class ChatDto {
     private String chatId;
     private Integer userNo;
-    private Integer partnerNo;
+    private Integer guideId;
 
     public static ChatDto fromEntity(Chat chat) {
         return ChatDto.builder()
                 .chatId(chat.getChatId())
                 .userNo(chat.getUser().getUserNo())
-                .partnerNo(chat.getPartner().getUserNo())
+                .guideId(chat.getGuide().getGuideId())
                 .build();
     }
 

@@ -20,7 +20,7 @@ public class MessageService {
         Message messageDocument = Message.builder()
                 .chatId(messageDTO.getChatId())
                 .userNo(messageDTO.getUserNo())
-                .partnerNo(messageDTO.getPartnerNo())
+                .guideId(messageDTO.getGuideId())
                 .messageContent(messageDTO.getMessageContent())
                 .transMessageContent(messageDTO.getTransMessageContent())
                 .createdAt(messageDTO.getCreatedAt())
