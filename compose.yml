@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
   wazoo-web-server:
@@ -7,7 +6,7 @@ services:
     ports:
       - "80:8080"
     depends_on:
-      - mongo
+      - mongo-server
     networks:
       - main-network
 
