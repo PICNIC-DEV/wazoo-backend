@@ -6,6 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import wazoo.dto.CustomUserInfoDto;
 
 import java.security.Key;
 import java.time.ZonedDateTime;
@@ -32,29 +33,27 @@ public class JwtUtil {
 
     /**
      * Access Token 생성
-     * @param member
+     * @param user
      * @return Access Token String
      */
-    public String createAccessToken(CustomUserInfoDto member) {
-        return createToken(member, accessTokenExpTime);
+    public String createAccessToken(CustomUserInfoDto user) {
+        return createToken(user, accessTokenExpTime);
     }
 
 
     /**
      * JWT 생성
-     * @param member
+     * @param user
      * @param expireTime
      * @return JWT String
      */
-    private String createToken(CustomUserInfoDto member, long expireTime) {
+    private String createToken(CustomUserInfoDto user, long expireTime) {
         Claims claims = Jwts.claims();
-        claims.put("memberId", member.getMemberId());
-        claims.put("email", member.getEmail());
-        claims.put("role", member.getRole());
+        claims.put("userId", user.getUserId());
+        claims.put("role", user.getRole());
 
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime tokenValidity = now.plusSeconds(expireTime);
-
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -71,7 +70,7 @@ public class JwtUtil {
      * @return User ID
      */
     public Long getUserId(String token) {
-        return parseClaims(token).get("memberId", Long.class);
+        return parseClaims(token).get("userId", Long.class);
     }
 
 

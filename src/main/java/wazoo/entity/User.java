@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import wazoo.RoleType;
 
 @Entity
 @Getter
@@ -42,4 +43,8 @@ public class User {
 
     @Column(name = "travel_type")
     private String travelType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "ROLE", nullable = false)
+    private RoleType role;
 }
