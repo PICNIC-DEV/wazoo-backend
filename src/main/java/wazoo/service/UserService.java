@@ -2,6 +2,7 @@ package wazoo.service;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.HandlerInterceptor;
+import wazoo.RoleType;
 import wazoo.dto.*;
 import wazoo.entity.Guide;
 import wazoo.entity.Review;
@@ -50,6 +51,7 @@ public class UserService {
         user.setUserPassword(registrationDto.getUserPassword());
         user.setAddress(registrationDto.getAddress());
         user.setLanguage(registrationDto.getLanguage());
+        user.setRole(RoleType.valueOf(registrationDto.getRole()));
 
         return userRepository.save(user);
     }

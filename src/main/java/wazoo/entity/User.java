@@ -38,13 +38,13 @@ public class User {
     @Column(name = "coin")
     private Integer coin;
 
-    @Column(name = "user_state", nullable = false)
-    private String userState;
+    @Column(name = "user_state")
+    private String userState = "normal";
 
     @Column(name = "travel_type")
     private String travelType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "ROLE", nullable = false)
+    @Column(name = "role", nullable = false)
     private RoleType role;
 }

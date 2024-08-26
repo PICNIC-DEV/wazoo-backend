@@ -14,4 +14,6 @@ public class UserRegistrationDto {
     private String address;
 
     private String language;
+
+    private String role;
 }

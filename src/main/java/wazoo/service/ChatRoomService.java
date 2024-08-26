@@ -37,7 +37,6 @@ public class ChatRoomService {
     private AhoCorasick ahoCorasick;
     private BadWordFiltering badWordFiltering;
 
-
     private void initializeBadWords() throws IOException {
         ahoCorasick = new AhoCorasick();
         badWordFiltering = new BadWordFiltering();

@@ -29,6 +29,7 @@ public class UserController {
             registrationDto.setUserPassword(user.getPassword());
             registrationDto.setAddress(user.getAddress());
             registrationDto.setLanguage(user.getNativeLanguage());
+            registrationDto.setRole(user.getRole().toString());
 
             userService.registerUser(registrationDto);
             return ResponseEntity.ok("User registered successfully");
