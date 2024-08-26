@@ -28,8 +28,8 @@ public class SecurityConfig {
 
     // API 엔드포인트와 Swagger 관련 요청을 허용할 화이트리스트
     private static final String[] AUTH_WHITELIST = {
-            "/api/v1/member/**", "/swagger-ui/**", "/api-docs", "/swagger-ui-custom.html",
-            "/v3/api-docs/**", "/api-docs/**", "/swagger-ui.html", "/api/v1/auth/**"
+            "/api/v1/users/**",
+            "/api/v1/auth/**"
     };
 
     @Bean
@@ -63,6 +63,8 @@ public class SecurityConfig {
                                 .accessDeniedHandler(accessDeniedHandler))
 
                 // 권한 규칙 설정
+//                .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll());
+
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 // AUTH_WHITELIST에 포함된 요청은 모두 허용

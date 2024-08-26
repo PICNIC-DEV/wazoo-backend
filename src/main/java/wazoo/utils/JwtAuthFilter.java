@@ -26,6 +26,10 @@ public class JwtAuthFilter extends OncePerRequestFilter { // OncePerRequestFilte
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authorizationHeader = request.getHeader("Authorization");
 
+        String requestPath = request.getRequestURI();
+
+        logger.info("Request Path: " + requestPath);
+
         //JWT가 헤더에 있는 경우
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);

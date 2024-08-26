@@ -20,20 +20,15 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/register")
-    public ResponseEntity<String> registerUser(
-            @RequestParam("name") String name,
-            @RequestParam("loginId") String loginId,
-            @RequestParam("loginPassword") String loginPassword,
-            @RequestParam("address") String address,
-            @RequestParam("language") String language) {
+    @PostMapping("/join")
+    public ResponseEntity<String> registerUser(@RequestBody UserDto user) {
         try {
             UserRegistrationDto registrationDto = new UserRegistrationDto();
-            registrationDto.setName(name);
-            registrationDto.setUserId(loginId);
-            registrationDto.setUserPassword(loginPassword);
-            registrationDto.setAddress(address);
-            registrationDto.setLanguage(language);
+            registrationDto.setName(user.getName());
+            registrationDto.setUserId(user.getUserId());
+            registrationDto.setUserPassword(user.getPassword());
+            registrationDto.setAddress(user.getAddress());
+            registrationDto.setLanguage(user.getNativeLanguage());
 
             userService.registerUser(registrationDto);
             return ResponseEntity.ok("User registered successfully");
