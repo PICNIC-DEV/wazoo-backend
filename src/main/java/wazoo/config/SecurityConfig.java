@@ -20,7 +20,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtUtil jwtUtil;
     private final CustomAccessDeniedHandler accessDeniedHandler;
@@ -31,6 +30,11 @@ public class SecurityConfig {
             "/api/v1/users/**",
             "/api/v1/auth/**"
     };
+
+    @Bean
+    public JwtAuthFilter jwtAuthFilter() {
+        return new JwtAuthFilter(customUserDetailsService, jwtUtil);
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -62,16 +66,14 @@ public class SecurityConfig {
                                 // 권한 부족에 대한 처리
                                 .accessDeniedHandler(accessDeniedHandler))
 
-                // 권한 규칙 설정
-//                .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll());
-
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 // AUTH_WHITELIST에 포함된 요청은 모두 허용
                                 .requestMatchers(AUTH_WHITELIST).permitAll()
                                 // 나머지 요청은 인증 필요
                                 .anyRequest().authenticated()
-                );
+                )
+                .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
 
         // SecurityFilterChain 객체를 반환하여 Spring Security 설정을 완료
         return http.build();

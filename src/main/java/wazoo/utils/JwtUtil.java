@@ -40,7 +40,6 @@ public class JwtUtil {
         return createToken(user, accessTokenExpTime);
     }
 
-
     /**
      * JWT 생성
      * @param user
@@ -63,16 +62,14 @@ public class JwtUtil {
                 .compact();
     }
 
-
     /**
      * Token에서 User ID 추출
      * @param token
      * @return User ID
      */
-    public Long getUserId(String token) {
-        return parseClaims(token).get("userId", Long.class);
+    public String getUserId(String token) {
+        return parseClaims(token).get("userId", String.class);
     }
-
 
     /**
      * JWT 검증
@@ -95,7 +92,6 @@ public class JwtUtil {
         return false;
     }
 
-
     /**
      * JWT Claims 추출
      * @param accessToken
@@ -108,6 +104,4 @@ public class JwtUtil {
             return e.getClaims();
         }
     }
-
-
 }

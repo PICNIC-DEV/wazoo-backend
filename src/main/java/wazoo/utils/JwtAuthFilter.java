@@ -26,19 +26,17 @@ public class JwtAuthFilter extends OncePerRequestFilter { // OncePerRequestFilte
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authorizationHeader = request.getHeader("Authorization");
 
-        String requestPath = request.getRequestURI();
-
-        logger.info("Request Path: " + requestPath);
+        logger.info("Authorization Header: " + authorizationHeader); // 요청 헤더 출력
 
         //JWT가 헤더에 있는 경우
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);
             //JWT 유효성 검증
             if (jwtUtil.validateToken(token)) {
-                Long userId = jwtUtil.getUserId(token);
+                String userId = jwtUtil.getUserId(token);
 
                 //유저와 토큰 일치 시 userDetails 생성
-                UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId.toString());
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId);
 
                 if (userDetails != null) {
                     //UserDetsils, Password, Role -> 접근권한 인증 Token 생성
@@ -50,7 +48,6 @@ public class JwtAuthFilter extends OncePerRequestFilter { // OncePerRequestFilte
                 }
             }
         }
-
         filterChain.doFilter(request, response); // 다음 필터로 넘기기
     }
 }

@@ -9,6 +9,7 @@ import wazoo.entity.User;
 import wazoo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import wazoo.utils.JwtUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,9 @@ import java.util.Map;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @PostMapping("/join")
     public ResponseEntity<String> registerUser(@RequestBody UserDto user) {
@@ -32,24 +36,27 @@ public class UserController {
             registrationDto.setRole(user.getRole().toString());
 
             userService.registerUser(registrationDto);
-            return ResponseEntity.ok("User registered successfully");
+            return ResponseEntity.ok("User(name : "+user.getName()+") registered successfully");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(
-            @RequestParam("userId") String userId,
-            @RequestParam("userPassword") String userPassword) {
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequestDto loginRequestDto) {
         try {
+            // 사용자 인증 로직
+            User user = userService.login(loginRequestDto);
+            if (user != null) {
+                CustomUserInfoDto customUserInfoDto = new CustomUserInfoDto();
+                customUserInfoDto.setUserId(user.getUserId());
+                customUserInfoDto.setRole(user.getRole());
 
-            LoginRequestDto loginRequestDto = new LoginRequestDto();
-            loginRequestDto.setUserId(userId);
-            loginRequestDto.setUserPassword(userPassword);
-
-            User userDto = userService.login(loginRequestDto);
-            return ResponseEntity.ok(userDto);
+                String jwtToken = jwtUtil.createAccessToken(customUserInfoDto);
+                return ResponseEntity.ok(new JwtResponse(jwtToken));
+            } else {
+                return ResponseEntity.status(401).body("Invalid credentials");
+            }
         } catch (RuntimeException e) {
             return ResponseEntity.status(401).body(e.getMessage());
         }
@@ -99,4 +106,16 @@ public class UserController {
         return ResponseEntity.ok(guideReviewListResponseDto);
     }
 
+}
+
+class JwtResponse {
+    private String token;
+
+    public JwtResponse(String token) {
+        this.token = token;
+    }
+
+    public String getToken() {
+        return token;
+    }
 }
