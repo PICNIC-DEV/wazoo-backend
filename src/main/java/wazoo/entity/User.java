@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import wazoo.RoleType;
 
 @Entity
 @Getter
@@ -37,9 +38,13 @@ public class User {
     @Column(name = "coin")
     private Integer coin;
 
-    @Column(name = "user_state", nullable = false)
-    private String userState;
+    @Column(name = "user_state")
+    private String userState = "normal";
 
     @Column(name = "travel_type")
     private String travelType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private RoleType role;
 }

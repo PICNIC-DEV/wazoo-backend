@@ -1,7 +1,8 @@
 package wazoo.service;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.HandlerInterceptor;
+import wazoo.RoleType;
 import wazoo.dto.*;
 import wazoo.entity.Guide;
 import wazoo.entity.Review;
@@ -33,35 +34,34 @@ public class UserService {
     @Autowired
     private ReviewSummaryRepository reviewSummaryRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     public UserService() throws IOException {
     }
 
-    public User registerUser(UserRegistrationDto registrationDto) {
-        User existingUser = userRepository.findByName(registrationDto.getName());
-        if (existingUser != null) {
+    public void registerUser(UserRegistrationDto registrationDto) {
+        Optional<User> existingUser = userRepository.findByUserId(registrationDto.getUserId());
+        if (existingUser.isPresent()) {
             throw new RuntimeException("Username already exists");
         }
-
         User user = new User();
 
         user.setName(registrationDto.getName());
         user.setUserId(registrationDto.getUserId());
-        user.setUserPassword(registrationDto.getUserPassword());
+        user.setUserPassword(passwordEncoder.encode(registrationDto.getUserPassword()));
         user.setAddress(registrationDto.getAddress());
         user.setLanguage(registrationDto.getLanguage());
+        user.setRole(RoleType.valueOf(registrationDto.getRole()));
 
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     public User login(LoginRequestDto loginRequestDto) {
-
-        User user = userRepository.findByUserIdAndUserPassword(loginRequestDto.getUserId(), loginRequestDto.getUserPassword());
-        if (user == null) {
-            throw new RuntimeException("Invalid username or password");
-        }
-
-        return user;
+        return userRepository.findByUserId(loginRequestDto.getUserId())
+                .filter(user -> passwordEncoder.matches(loginRequestDto.getUserPassword(), user.getUserPassword()))
+                .orElseThrow(() -> new RuntimeException("Invalid username or password"));
     }
 
     // 1. 리뷰 등록
