@@ -19,4 +19,10 @@ public class TranslationService {
         return translation.getTranslatedText();
     }
 
+    // 언어 감지
+    public String detectLanguage(String text) {
+        String detectLanguage = translate.detect(text).getLanguage();
+        return detectLanguage;
+    }
+
 }
