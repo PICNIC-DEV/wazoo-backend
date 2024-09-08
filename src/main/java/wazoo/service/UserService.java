@@ -169,7 +169,7 @@ public class UserService {
     // 6-2 특정 가이드의 평균 점수 조회
     private Double getGuideScoreAvg(Integer guideId) {
         ReviewSummary reviewSummary = reviewSummaryRepository.findById(guideId)
-                .orElseThrow(() -> new IllegalArgumentException("not found guidId: " + guideId));
+                .orElseThrow(() -> new IllegalArgumentException("not found guideId: " + guideId));
         return reviewSummary.getGuideScoreAvg();
     }
 
