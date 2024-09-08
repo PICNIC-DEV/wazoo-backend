@@ -99,10 +99,10 @@ public class UserController {
         return ResponseEntity.ok(reviewsByUserNo);
     }
 
-    // 6. 특정 가이드의 리뷰 리스트 조회
-    @GetMapping("/reviews/guides/{guideId}")
-    public ResponseEntity<GuideReviewListResponseDto> getGuideReviewList(@PathVariable Integer guideId) {
-        GuideReviewListResponseDto guideReviewListResponseDto = userService.findGuideReviewsAndAverage(guideId);
+    // 6. 특정 가이드의 리뷰 리스트 조회 (로그인 사용자 언어 정보 얻기 위해서 userNo variable 추가)
+    @GetMapping("/reviews/guides/{guideId}/{userNo}")
+    public ResponseEntity<GuideReviewListResponseDto> getGuideReviewList(@PathVariable Integer guideId, @PathVariable Integer userNo) {
+        GuideReviewListResponseDto guideReviewListResponseDto = userService.findGuideReviewsAndAverage(guideId, userNo);
         return ResponseEntity.ok(guideReviewListResponseDto);
     }
 

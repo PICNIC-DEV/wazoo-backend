@@ -37,6 +37,9 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private TranslationService translationService;
+
 
     public UserService() throws IOException {
     }
@@ -128,24 +131,37 @@ public class UserService {
     }
 
     // 6. 특정 가이드의 리뷰 리스트와 평균 점수 조회
-    public GuideReviewListResponseDto findGuideReviewsAndAverage(Integer guideId) {
-        List<ReviewResponseDto> guideReviewsList = getGuideReviews(guideId);
+    public GuideReviewListResponseDto findGuideReviewsAndAverage(Integer guideId, Integer userNo) {
+        User user = userRepository.findByUserNo(userNo);
+        String userLanguage = user.getLanguage();
+
+        List<ReviewResponseDto> guideReviewsList = getGuideReviews(guideId, userLanguage);
         Double guideScoreAvg = getGuideScoreAvg(guideId);
 
         return new GuideReviewListResponseDto(guideId, guideScoreAvg, guideReviewsList);
     }
 
-    // 6-1 특정 가이드의 리뷰 리스트 조회
-    private List<ReviewResponseDto> getGuideReviews(Integer guideId) {
+    // 6-1 특정 가이드의 리뷰 리스트 조회 ( 사용자의 언어에 따른 리뷰 번역 추가 )
+    private List<ReviewResponseDto> getGuideReviews(Integer guideId, String userLanguage) {
         List<Review> guideReviewsList = reviewRepository.findByGuide_GuideId(guideId);
 
         List<ReviewResponseDto> reviewsDto = guideReviewsList.stream()
-                .map(review -> new ReviewResponseDto(
-                        review.getReviewId(),
-                        review.getUser().getTravelType(),
-                        review.getGuideScore(),
-                        review.getReview()
-                ))
+                .map(review -> {
+                    String detectedLanguage = translationService.detectLanguage(review.getReview()); // 감지한 언어
+                    String reviewText = review.getReview(); // 해당 리뷰 텍스트
+
+                    // 감지된 언어와 사용자의 언어가 다를경우 번역 수행
+                    if(!detectedLanguage.equals(userLanguage)) {
+                        reviewText = translationService.translateText(review.getReview(), userLanguage, detectedLanguage);
+                    }
+
+                    return new ReviewResponseDto(
+                            review.getReviewId(),
+                            review.getUser().getTravelType(),
+                            review.getGuideScore(),
+                            reviewText
+                    );
+                })
                 .collect(Collectors.toList());
         return reviewsDto;
     }
@@ -153,7 +169,7 @@ public class UserService {
     // 6-2 특정 가이드의 평균 점수 조회
     private Double getGuideScoreAvg(Integer guideId) {
         ReviewSummary reviewSummary = reviewSummaryRepository.findById(guideId)
-                .orElseThrow(() -> new IllegalArgumentException("not found guidId: " + guideId));
+                .orElseThrow(() -> new IllegalArgumentException("not found guideId: " + guideId));
         return reviewSummary.getGuideScoreAvg();
     }
 

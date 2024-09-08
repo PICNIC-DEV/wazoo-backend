@@ -53,8 +53,8 @@ public class ChatController {
         User user = userRepository.findByUserNo(userNo);
         String userLang = user.getLanguage();
 
-        int guidId = message.getGuideId();
-        Guide guide  = guideRepository.findByGuideId(guidId);
+        int guideId = message.getGuideId();
+        Guide guide  = guideRepository.findByGuideId(guideId);
         User guideUser = guide.getUser();
         String partnerLang = guideUser.getLanguage();
 
