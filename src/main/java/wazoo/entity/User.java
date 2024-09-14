@@ -6,47 +6,45 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import wazoo.RoleType;
 
 @Entity
-@Table(name = "user")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "user")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private int userId;
+    @Column(name = "user_no")
+    private Integer userNo;
+
+    @Column(name = "user_id", nullable = false)
+    private String userId;
+
+    @Column(name ="user_password", nullable = false)
+    private String userPassword;
 
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "native_language")
-    private String nativeLanguage;
+    @Column(name = "language", nullable = false)
+    private String language;
+
+    @Column(name = "address", nullable = false)
+    private String address;
+
+    @Column(name = "coin")
+    private Integer coin;
+
+    @Column(name = "user_state")
+    private String userState = "normal";
 
     @Column(name = "travel_type")
     private String travelType;
 
-    @Column(name = "user_temperature")
-    private Integer userTemperature;
-
-    @Column(name = "address")
-    private String address;
-
-    @Column(name = "preferred_country")
-    private String preferredCountry;
-
-    @Column(name = "user_state")
-    private String userState;
-
-    @Column(name = "user_login_id")
-    private String userLoginId;
-
-    @Column(name = "user_login_password")
-    private String userLoginPassword;
-
-    @Column(name = "coin")
-    private Integer coin;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private RoleType role;
 }

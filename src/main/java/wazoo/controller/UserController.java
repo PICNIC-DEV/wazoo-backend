@@ -1,62 +1,128 @@
 package wazoo.controller;
 
+import feign.Response;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import wazoo.dto.LoginRequestDto;
-import wazoo.dto.UserRegistrationDto;
+import wazoo.dto.*;
+import wazoo.entity.Review;
 import wazoo.entity.User;
 import wazoo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import wazoo.utils.JwtUtil;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/v1/users")
 public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/traveltype/{user_id}")
-    public String analyzeUser(@PathVariable int user_id, @RequestBody boolean[] answers) {
-        return userService.saveTravelTypeUser(user_id, answers);
-    }
+    @Autowired
+    private JwtUtil jwtUtil;
 
-    @PostMapping("/register")
-    public ResponseEntity<String> registerUser(
-            @RequestParam("name") String name,
-            @RequestParam("login_id") String login_id,
-            @RequestParam("login_password") String login_password,
-            @RequestParam("address") String address,
-            @RequestParam("nativeLanguage") String nativeLanguage) {
+    @PostMapping("/join")
+    public ResponseEntity<String> registerUser(@RequestBody UserDto user) {
         try {
-
             UserRegistrationDto registrationDto = new UserRegistrationDto();
-            registrationDto.setName(name);
-            registrationDto.setLogin_id(login_id);
-            registrationDto.setLogin_password(login_password);
-            registrationDto.setAddress(address);
-            registrationDto.setNativeLanguage(nativeLanguage);
+            registrationDto.setName(user.getName());
+            registrationDto.setUserId(user.getUserId());
+            registrationDto.setUserPassword(user.getPassword());
+            registrationDto.setAddress(user.getAddress());
+            registrationDto.setLanguage(user.getNativeLanguage());
+            registrationDto.setRole(user.getRole().toString());
 
             userService.registerUser(registrationDto);
-            return ResponseEntity.ok("User registered successfully");
+            return ResponseEntity.ok("User(name : "+user.getName()+") registered successfully");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(
-            @RequestParam("login_id") String login_id,
-            @RequestParam("login_password") String login_password) {
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequestDto loginRequestDto) {
         try {
+            // 사용자 인증 로직
+            User user = userService.login(loginRequestDto);
+            if (user != null) {
+                CustomUserInfoDto customUserInfoDto = new CustomUserInfoDto();
+                customUserInfoDto.setUserId(user.getUserId());
+                customUserInfoDto.setRole(user.getRole());
 
-            LoginRequestDto loginRequestDto = new LoginRequestDto();
-            loginRequestDto.setLogin_id(login_id);
-            loginRequestDto.setLogin_password(login_password);
-
-            User userDto = userService.login(loginRequestDto);
-            return ResponseEntity.ok(userDto);
+                String jwtToken = jwtUtil.createAccessToken(customUserInfoDto);
+                return ResponseEntity.ok(new JwtResponse(jwtToken));
+            } else {
+                return ResponseEntity.status(401).body("Invalid credentials");
+            }
         } catch (RuntimeException e) {
             return ResponseEntity.status(401).body(e.getMessage());
         }
     }
 
+    // 1. 리뷰 등록 CreateReviewResponseDto
+    @PostMapping("/reviews")
+    public ResponseEntity<Map<String, String>> createReview(@RequestBody CreateReviewRequestDto reviewRequestDto) {
+        Map<String, String> response = userService.createReview(reviewRequestDto);
+        return ResponseEntity.ok(response);
+    }
+
+    // 2. 리뷰 수정
+    @PatchMapping("/reviews/{reviewId}")
+    public ResponseEntity<Review> updateReview(@PathVariable Integer reviewId, @RequestBody UpdateReviewDto updateReviewDto) {
+        Review updatedReview = userService.update(reviewId, updateReviewDto);
+        return ResponseEntity.ok().body(updatedReview);
+    }
+
+    // 3. 리뷰 조회
+    @GetMapping("/reviews/{reviewId}")
+    public ResponseEntity<ReviewResponseDto> getReview(@PathVariable Integer reviewId) {
+        ReviewResponseDto response = userService.findByReviewId(reviewId);
+        return ResponseEntity.ok(response);
+    }
+
+    // 4. 리뷰 삭제
+    @DeleteMapping("/reviews/{reviewId}")
+    public ResponseEntity<Map<String, String>> deleteReview(@PathVariable Integer reviewId){
+        userService.deleteReview(reviewId);
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "success");
+        return ResponseEntity.ok(response);
+    }
+
+    // 5. 특정 유저가 작성한 리뷰 조회
+    @GetMapping("/{userNo}/reviews")
+    public ResponseEntity<UserReviewListResponseDto> getReviewList(@PathVariable Integer userNo) {
+        UserReviewListResponseDto reviewsByUserNo = userService.findReviewsByUserNo(userNo);
+        return ResponseEntity.ok(reviewsByUserNo);
+    }
+
+    // 6. 특정 가이드의 리뷰 리스트 조회 (로그인 사용자 언어 정보 얻기 위해서 userNo variable 추가)
+    @GetMapping("/reviews/guides/{guideId}/{userNo}")
+    public ResponseEntity<GuideReviewListResponseDto> getGuideReviewList(@PathVariable Integer guideId, @PathVariable Integer userNo) {
+        GuideReviewListResponseDto guideReviewListResponseDto = userService.findGuideReviewsAndAverage(guideId, userNo);
+        return ResponseEntity.ok(guideReviewListResponseDto);
+    }
+
+    // 마이페이지 조회
+    @GetMapping("/{userNo}/mypage")
+    public ResponseEntity<MyPageResponseDto> getUserMyPage(@PathVariable Integer userNo) {
+        MyPageResponseDto myPageResponseDto = userService.getUserInfoByUserNo(userNo);
+        return ResponseEntity.ok(myPageResponseDto);
+    }
+
+}
+
+class JwtResponse {
+    private String token;
+
+    public JwtResponse(String token) {
+        this.token = token;
+    }
+
+    public String getToken() {
+        return token;
+    }
 }

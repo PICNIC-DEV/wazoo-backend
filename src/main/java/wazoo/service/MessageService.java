@@ -7,6 +7,7 @@ import wazoo.entity.Message;
 import wazoo.repository.MessageRepository;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -16,16 +17,13 @@ public class MessageService {
     // 채팅 메시지 DB 저장 (소켓 메시지 전송 시)
     public void saveMessage(MessageDTO messageDTO) {
 
-        LocalDateTime createdAt = LocalDateTime.now(); // 현재 시간
-        System.out.println("메시지생숑시간" + createdAt);
-
         Message messageDocument = Message.builder()
                 .chatId(messageDTO.getChatId())
-                .userId(messageDTO.getUserId())
-                .partnerId(messageDTO.getPartnerId())
-                .message(messageDTO.getMessage())
-                .transMessage(messageDTO.getTransMessage())
-                .createdAt(createdAt)
+                .userNo(messageDTO.getUserNo())
+                .guideId(messageDTO.getGuideId())
+                .messageContent(messageDTO.getMessageContent())
+                .transMessageContent(messageDTO.getTransMessageContent())
+                .createdAt(messageDTO.getCreatedAt())
                 .build();
         messageRepository.save(messageDocument); // MongoDB 저장
 

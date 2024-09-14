@@ -1,0 +1,29 @@
+services:
+  wazoo-web-server:
+    container_name: webserver
+    build: .
+    ports:
+      - "80:8080"
+    depends_on:
+      mongo-server:
+        condition: service_healthy
+    networks:
+      - main-network
+
+  mongo-server:
+    image: mongo
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: wazoo
+      MONGO_INITDB_ROOT_PASSWORD: wazoo1234
+    ports:
+      - "27017:27017"
+    networks:
+      - main-network
+    healthcheck:
+      test: mongosh --authenticationDatabase admin --host localhost -u wazoo -p wazoo1234 --eval "db.adminCommand('ping')"
+      interval: 5s
+      retries: 10
+
+networks:
+  main-network:

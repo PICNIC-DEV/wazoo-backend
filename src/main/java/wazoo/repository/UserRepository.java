@@ -7,9 +7,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
-    User findByUserId(Integer userId);
+    User findByUserNo(Integer userNo);
     List<User> findAll();
 //    Optional<User> findByName(String name);
     User findByName(String name);
-    User findByUserLoginIdAndUserLoginPassword(String userLoginId, String userLoginPassword);
+    Optional<User> findByUserId(String id);
+    User findByUserIdAndUserPassword(String userLoginId, String userLoginPassword);
 }

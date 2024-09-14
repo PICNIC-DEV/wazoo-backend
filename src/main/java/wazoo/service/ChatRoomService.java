@@ -1,14 +1,20 @@
 package wazoo.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import wazoo.dto.ChatRoomDTO;
-import wazoo.entity.ChatRoom;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import wazoo.dto.ChatDto;
+import wazoo.dto.ChatListResponseDto;
+import wazoo.entity.Chat;
+import wazoo.entity.Guide;
 import wazoo.entity.Message;
 import wazoo.entity.User;
 import wazoo.filtering.AhoCorasick;
 import wazoo.filtering.BadWordFiltering;
 import wazoo.repository.ChatRoomRepository;
+import wazoo.repository.GuideRepository;
 import wazoo.repository.MessageRepository;
 import wazoo.repository.UserRepository;
 import wazoo.utils.BadWordLoader;
@@ -16,10 +22,7 @@ import wazoo.utils.BadWordLoader;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -28,10 +31,11 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
+    private final GuideRepository guideRepository;
+    private final MessageService messageService;
 
     private AhoCorasick ahoCorasick;
     private BadWordFiltering badWordFiltering;
-
 
     private void initializeBadWords() throws IOException {
         ahoCorasick = new AhoCorasick();
@@ -45,43 +49,44 @@ public class ChatRoomService {
         badWordFiltering.addBadWords(badWords);
     }
 
-    // 1. 전체 채팅방 목록 반환
-    public List<ChatRoomDTO> findAll() {
-        return chatRoomRepository.findAll().stream()
-                .map(ChatRoomDTO::fromEntity)
-                .collect(Collectors.toList());
-    }
-    // 2. 특정 채팅방 반환
-    public ChatRoomDTO findChatRoomById(String chatId) {
-        Optional<ChatRoom> chatRoom = chatRoomRepository.findByChatRoomId(chatId);
-        return chatRoom.map(ChatRoomDTO::fromEntity).orElse(null);
+    // 3. 채팅방 ID 별 대화목록 모두 조회
+    @GetMapping("/messages/{chatId}")
+    public ResponseEntity<List<Message>> getMessages(@PathVariable String chatId) {
+        List<Message> list = messageService.getMessagesByChatId(chatId);
+        return ResponseEntity.ok(list);
     }
 
     // 4. 특정 유저가 참여하고 있는 전체 채팅방 정보 조회
-    public List<ChatRoomDTO> findChatRoomsByUserId(User userId) {
-        List<ChatRoom> chatRooms = chatRoomRepository.findByUserId(userId.getUserId());
+    public List<ChatListResponseDto> findChatRoomsByUserId(User user) {
+        // 사용자의 가이드아이디 조회
+        Guide guide = guideRepository.findByUser(user);
+        List<Chat> chatRooms;
+
+        if (guide == null) {
+            chatRooms = chatRoomRepository.findChatRoomsByUserNoOrGuideId(user.getUserNo(), null);
+        } else {
+            chatRooms = chatRoomRepository.findChatRoomsByUserNoOrGuideId(user.getUserNo(), guide.getGuideId());
+        }
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        return chatRooms.stream().map(chatRoom -> {
-            User partner = (chatRoom.getChatRoomFounder() == userId) ? chatRoom.getChatRoomAudience() : chatRoom.getChatRoomFounder();
+        return chatRooms.stream().map(chat -> { // 2번이야.
+            // 채팅 상대방 이름
+            User partner = (chat.getUser().getUserNo().equals(user.getUserNo())) ? chat.getGuide().getUser() : chat.getUser();
             String partnerName = partner.getName();
 
-            List<Message> chats = messageRepository.findByChatIdOrderByCreatedAtDesc(chatRoom.getChatRoomId());
+            List<Message> chats = messageRepository.findByChatIdOrderByCreatedAtDesc(chat.getChatId());
             String lastMessage = "";
-            String lastMessageTime = "";
 
+            LocalDateTime lastMessageTime = null;
             if (!chats.isEmpty()) {
                 Message lastChat = chats.get(0); // 가장 최신 메시지
-                lastMessage = lastChat.getMessage();
-                LocalDateTime lastMessageTimeValue = lastChat.getCreatedAt();
-                if (lastMessageTimeValue != null) {
-                    lastMessageTime = lastMessageTimeValue.format(formatter); // 날짜 형식 지정
-                }
+                lastMessage = lastChat.getMessageContent();
+                lastMessageTime = lastChat.getCreatedAt();
             }
 
-            return ChatRoomDTO.fromEntity(
-                    chatRoom,
+            return ChatListResponseDto.fromEntity(
+                    chat,
                     lastMessage,
                     lastMessageTime,
                     partnerName
@@ -100,12 +105,12 @@ public class ChatRoomService {
         }
 
         LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
-        List<Message> recentDialogs = messageRepository.findByUserIdAndCreatedAtAfter(user.getUserId(), threeDaysAgo);
+        List<Message> recentDialogs = messageRepository.findByUserNoAndCreatedAtAfter(user.getUserNo(), threeDaysAgo);
         List<Message> filteredDialogs = new ArrayList<>();
 
         for (Message dialog : recentDialogs) {
-            Set<String> badWordsFound = ahoCorasick.search(dialog.getMessage());
-            if (!badWordsFound.isEmpty() || badWordFiltering.checkBadWord(dialog.getMessage())) {
+            Set<String> badWordsFound = ahoCorasick.search(dialog.getMessageContent());
+            if (!badWordsFound.isEmpty() || badWordFiltering.checkBadWord(dialog.getMessageContent())) {
                 filteredDialogs.add(dialog);
             }
         }
@@ -113,4 +118,27 @@ public class ChatRoomService {
         return filteredDialogs;
     }
 
+    // 6. 채팅방 생성
+    public ChatDto createRoom(Integer userNo, Integer guideId) {
+        User user = userRepository.findByUserNo(userNo);
+        Guide guide = guideRepository.findByGuideId(guideId);
+//        User partner = userRepository.findByUserNo(partnerNo);
+
+        // 6-1. 기존 채팅방 존재 유무 확인
+        boolean chatRoomExists = chatRoomRepository.findByUserNoAndPartnerNo(user.getUserNo(), guide.getGuideId()).size() > 0;
+
+        if (chatRoomExists) {
+            // 기존 채팅방이 존재하면 null 반환
+            return null;
+        }
+
+        Chat chatRoom = Chat.builder()
+                .chatId(UUID.randomUUID().toString())
+                .user(user)
+                .guide(guide)
+                .build();
+        Chat savedChatRoom = chatRoomRepository.save(chatRoom);
+        return ChatDto.fromEntity(savedChatRoom);
+
+    }
 }
